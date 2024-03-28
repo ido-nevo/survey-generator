@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+
+  jpa:
+    database: postgresql
+
+  flyway:
+    enabled: true
+    locations: db/migration
+    schemas: survey_admin
+
+
+  devtools:
+    add-properties: off

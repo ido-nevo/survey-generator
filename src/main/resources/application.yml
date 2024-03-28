@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    dbcp2:
+      default-schema:
+
+  jpa:
+    database: postgresql
+    properties:
+      hibernate:
+        default_schema: survey_admin
+
+  flyway:
+    enabled: true
+    locations: db/migration
+    schemas: survey_admin
+
