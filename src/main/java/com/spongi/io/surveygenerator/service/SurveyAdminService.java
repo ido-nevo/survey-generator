@@ -9,19 +9,19 @@ import com.spongi.io.surveygenerator.repository.OptionRepository;
 import com.spongi.io.surveygenerator.repository.QuestionRepository;
 import com.spongi.io.surveygenerator.repository.SurveyRepository;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 
 @Service
-@Validated
 @RequiredArgsConstructor
 public class SurveyAdminService {
     final SurveyRepository surveyRepository;
@@ -31,7 +31,7 @@ public class SurveyAdminService {
     final SurveyMapper surveyMapper;
 
     @Transactional
-    public void createNewSurvey(@Valid Survey request) {
+    public void createNewSurvey(Survey request) {
         DbSurvey survey = surveyMapper.surveyToEntity(request);
         List<DbQuestion> questions = request.getQuestions().stream().map(q -> surveyMapper.questionToEntity(q, survey)).toList();
         List<DbQuestion> storedQuestions = questionRepository.saveAllAndFlush(questions);
@@ -45,5 +45,24 @@ public class SurveyAdminService {
             allOptions.addAll(options);
         }
         optionRepository.saveAllAndFlush(allOptions);
+    }
+
+    public List<Survey> getSurveys() {
+        List<Survey> surveys = new ArrayList<>();
+        List<DbSurvey> dbSurveys = surveyRepository.findAll();
+        for (DbSurvey dbSurvey: dbSurveys) {
+            List<DbQuestion> dbQuestions = questionRepository.findAllBySurveyId(dbSurvey.getId());
+            Survey survey = surveyMapper.surveyFromEntity(dbSurvey, dbQuestions);
+            surveys.add(survey);
+        }
+        return surveys;
+    }
+
+    public Survey getSurvey(Long surveyId) {
+        Function<DbSurvey, Optional<Survey>> mapSurvey = s -> {
+                List<DbQuestion> dbQuestions = questionRepository.findAllBySurveyId(s.getId());
+                return Optional.ofNullable(surveyMapper.surveyFromEntity(s, dbQuestions));
+        };
+        return surveyRepository.findOneById(surveyId).flatMap(mapSurvey).orElse(null);
     }
 }

@@ -1,5 +1,6 @@
 package com.spongi.io.surveygenerator.domain;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import java.util.List;
@@ -12,5 +13,5 @@ public class Question {
     @NotBlank
     private String text;
     @NotEmpty
-    private List<Option> options;
+    private List<@Valid Option> options;
 }

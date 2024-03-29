@@ -6,6 +6,7 @@ import com.spongi.io.surveygenerator.domain.Survey;
 import com.spongi.io.surveygenerator.entity.DbOption;
 import com.spongi.io.surveygenerator.entity.DbQuestion;
 import com.spongi.io.surveygenerator.entity.DbSurvey;
+import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.stereotype.Component;
@@ -24,4 +25,9 @@ public interface SurveyMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "text", source = "source.text")
     DbOption optionToEntity(Option source, DbQuestion question);
+
+//    @Mapping(target = "id", ignore = true)
+    Survey surveyFromEntity(DbSurvey source, List<DbQuestion> questions);
+
+    Question questionFromEntity(DbQuestion source);
 }
